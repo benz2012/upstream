@@ -1,0 +1,10 @@
+{
+  "netflix":"https://media.netflix.com/en/only-on-netflix#/new?page=1",
+  "hbo":"http://www.hbo.com/schedule/hbonow-hbogo?currentSchedule=false",
+  "amazon":"https://en.wikipedia.org/wiki/List_of_original_programs_distributed_by_Amazon#Future_programming",
+  "hulu":"https://www.hulu.com/press/originals-premiere-dates/",
+  "showtime":"http://www.sho.com/on-demand",
+  "cinemax":"https://schedule.cinemax.com/apps/hodschedule/cod/categoryprevweek.do",
+  "acorn":"https://acorn.tv/schedule/comingsoon",
+  "cbs":"http://www.cbs.com/shows/originals/"
+}

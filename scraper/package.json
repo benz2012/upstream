@@ -1,0 +1,16 @@
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "description": "Scrape various TV services to determine show release dates",
+  "main": "scraper.js",
+  "scripts": {
+    "start": "node scraper.js"
+  },
+  "author": "Ben Zenker",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.1",
+    "phantom": "^4.0.4",
+    "request": "^2.81.0"
+  }
+}
