@@ -1,5 +1,5 @@
 # Upstream
-An Alexa skill that tells you what new TV show are on the horizon
+An Alexa skill that tells you what new TV shows are on the horizon
 
 Built With
 ---
