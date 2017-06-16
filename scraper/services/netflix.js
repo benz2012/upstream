@@ -1,6 +1,6 @@
 const cheerio = require('cheerio')
 
-const Release = require('../release.js')
+const Release = require('../components/release.js')
 const client_rendered_html = require('../get/client_html')
 
 const serviceName = 'Netlfix'
