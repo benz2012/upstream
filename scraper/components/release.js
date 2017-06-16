@@ -14,7 +14,14 @@ class Release {
     return v
   }
   worthy() {
-    // return false if release is not a tv show with an identifiable release date
+    const d = new Date()
+    const yesterday = d.setDate(d.getDate() - 1)
+    if (this.date < yesterday) {
+      return false
+    }
+    if (this.releaseType !== 'series') {
+      return false
+    }
     return true
   }
 }
