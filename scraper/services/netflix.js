@@ -17,8 +17,12 @@ function netflixScrape(url) {
       rows.each((i, row) => {
         const name = dom(row).find('.oon-name').first()
           .find('span').first().text()
-        const date = dom(row).find('.oon-date').first().text()
-        const releaseType = dom(row).find('.oon-type').first().text()
+        const date = new Date(
+          dom(row).find('.oon-date').first().text()
+        )
+        const releaseType = dom(row).find('.oon-type').first()
+          .text().toLowerCase()
+
         const release = new Release(name, date, serviceName, releaseType)
         releases.push(release)
       })

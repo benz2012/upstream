@@ -20,6 +20,7 @@ const scrapePromises = Object.keys(releaseURLs).map(service => {
 // Mangle data into worthwhile release objects and send those to the database
 Promise.all(scrapePromises)
 .then(resolutions => flatten(resolutions))
+.then(releases => releases.filter(r => r))
 .then(releases => {
   releases.forEach(r => {
     if (!r.valid()) {
