@@ -1,0 +1,21 @@
+GetReleasesIntent {Content}
+GetReleasesIntent tell me {Content}
+GetReleasesIntent give me {Content}
+GetReleasesIntent new {Content}
+GetReleasesIntent tell me new {Content}
+GetReleasesIntent give me new {Content}
+GetReleasesIntent upcoming {Content}
+GetReleasesIntent tell me upcoming {Content}
+GetReleasesIntent give me upcoming {Content}
+GetReleasesIntent what's coming out
+GetReleasesIntent what is coming out
+GetReleasesIntent what's coming out soon
+GetReleasesIntent what is coming out soon
+GetReleasesIntent new {Content} {Date}
+GetReleasesIntent upcoming {Content} {Date}
+GetReleasesIntent what's coming out {Date}
+GetReleasesIntent what's new {Date}
+GetReleasesIntent what's new on TV {Date}
+GetReleasesIntent what new {Content} comes out {Date}
+GetReleasesIntent something new
+GetReleasesIntent what should I watch

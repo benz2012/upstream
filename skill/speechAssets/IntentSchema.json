@@ -1,0 +1,18 @@
+{ "intents": [
+    {
+      "intent": "GetReleasesIntent",
+      "slots": [
+        {
+          "name": "Date",
+          "type": "AMAZON.DATE"
+        },
+        {
+          "name": "Content",
+          "type": "LIST_OF_SERIES_VARIATIONS"
+        }
+      ]
+    },
+    { "intent": "AMAZON.HelpIntent" },
+    { "intent": "AMAZON.StopIntent" },
+    { "intent": "AMAZON.CancelIntent" }
+]}

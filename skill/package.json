@@ -1,0 +1,18 @@
+{
+  "name": "upstream-skill",
+  "version": "1.0.0",
+  "description": "An Alexa skill that tells you what new TV shows are on the horizon",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benz2012/upstream.git"
+  },
+  "author": "Ben Zenker",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-sdk": "^1.0.10"
+  }
+}

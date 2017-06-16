@@ -1,10 +1,14 @@
 {
-  "name": "scraper",
+  "name": "upstream-scraper",
   "version": "1.0.0",
   "description": "Scrape various TV services to determine show release dates",
   "main": "scraper.js",
   "scripts": {
     "start": "node scraper.js"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/benz2012/upstream.git"
   },
   "author": "Ben Zenker",
   "license": "ISC",
