@@ -3,11 +3,11 @@
       "intent": "GetReleasesIntent",
       "slots": [
         {
-          "name": "Date",
-          "type": "AMAZON.DATE"
+          "name": "TimeDescriptor",
+          "type": "TIME_DESCRIPTOR"
         },
         {
-          "name": "Content",
+          "name": "Variation",
           "type": "LIST_OF_SERIES_VARIATIONS"
         }
       ]

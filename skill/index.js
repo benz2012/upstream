@@ -56,15 +56,15 @@ exports.handler = function(event, context, callback) {
 const handlers = {
     'LaunchRequest': function () { this.emit('GetReleasesIntent') },
     'GetReleasesIntent': function () {
-        const intentDate = this.event.request.intent.slots.Date.value
-        const intentMoment = moment(intentDate)
+        const intentTime = this.event.request.intent.slots.TimeDescriptor.value
+        // const intentMoment = moment(intentDate)
         // console.log(intentDateObj)
 
         // const randomIndex = Math.floor(Math.random() * Object.keys(releases).length)
         // const randomReleaseKey = Object.keys(releases)[randomIndex]
         // const randomRelease = releases[randomReleaseKey]['name']
         // const speechOutput = "A random show releasing soon is: " + randomRelease
-        this.emit(':tell', new String(intentMoment))
+        this.emit(':tell', intentTime)
     },
     'AMAZON.HelpIntent': function () {
         const speechOutput = HELP_MESSAGE
