@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "compress": "zip ./build/build -@ < ./util/compress.txt"
+    "compress": "zip -r -q ./build/build -@ < ./util/compress.txt && echo \"successfully zipped\" || echo \"failure\""
   },
   "repository": {
     "type": "git",
