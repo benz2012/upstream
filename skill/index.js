@@ -1,5 +1,6 @@
 'use strict'
 const Alexa = require('alexa-sdk')
+const moment = require('moment')
 
 const APP_ID = 'amzn1.ask.skill.20b56d1a-0616-4c72-90d5-34a061f0b873'
 const SKILL_NAME = 'Upstream'
@@ -7,7 +8,7 @@ const HELP_MESSAGE = "You can say what's coming this week, or, you can say exit.
 const HELP_REPROMPT = 'What can I help you with?'
 const STOP_MESSAGE = 'Goodbye!'
 
-const data = {
+const releases = {
   "00d38e6a-acb7-4e30-a82d-99b67f992d5f": {
     "date": "2017-06-23T04:00:00.000Z",
     "name": "GLOW",
@@ -55,12 +56,15 @@ exports.handler = function(event, context, callback) {
 const handlers = {
     'LaunchRequest': function () { this.emit('GetReleasesIntent') },
     'GetReleasesIntent': function () {
-        const releases = data
-        const randomIndex = Math.floor(Math.random() * Object.keys(releases).length)
-        const randomReleaseKey = Object.keys(releases)[randomIndex]
-        const randomRelease = releases[randomReleaseKey]['name']
-        const speechOutput = "A random show releasing soon is: " + randomRelease
-        this.emit(':tell', speechOutput)
+        const intentDate = this.event.request.intent.slots.Date.value
+        const intentMoment = moment(intentDate)
+        // console.log(intentDateObj)
+
+        // const randomIndex = Math.floor(Math.random() * Object.keys(releases).length)
+        // const randomReleaseKey = Object.keys(releases)[randomIndex]
+        // const randomRelease = releases[randomReleaseKey]['name']
+        // const speechOutput = "A random show releasing soon is: " + randomRelease
+        this.emit(':tell', new String(intentMoment))
     },
     'AMAZON.HelpIntent': function () {
         const speechOutput = HELP_MESSAGE
