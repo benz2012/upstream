@@ -3,6 +3,6 @@ build
 node_modules
 
 # FILES
-notes.txt
 .DS_Store
 npm-debug.log
+icon.psd
