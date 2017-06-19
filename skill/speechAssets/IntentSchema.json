@@ -1,14 +1,31 @@
 { "intents": [
     {
-      "intent": "GetReleasesIntent",
+      "intent": "GetReleases",
       "slots": [
         {
-          "name": "TimeDescriptor",
-          "type": "TIME_DESCRIPTOR"
+          "name": "TimePeriod",
+          "type": "AMAZON.DATE"
         },
         {
-          "name": "Variation",
-          "type": "LIST_OF_SERIES_VARIATIONS"
+          "name": "NumberToRead",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "Service",
+          "type": "STREAMING_SERVICE"
+        }
+      ]
+    },
+    {
+      "intent": "GetReleaseDate",
+      "slots": [
+        {
+          "name": "Series",
+          "type": "AMAZON.TVSeries"
+        },
+        {
+          "name": "TimePeriod",
+          "type": "AMAZON.DATE"
         }
       ]
     },

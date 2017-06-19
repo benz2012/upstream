@@ -1,21 +1,24 @@
-GetReleasesIntent {Variation}
-GetReleasesIntent tell me {Variation}
-GetReleasesIntent give me {Variation}
-GetReleasesIntent new {Variation}
-GetReleasesIntent tell me new {Variation}
-GetReleasesIntent give me new {Variation}
-GetReleasesIntent upcoming {Variation}
-GetReleasesIntent tell me upcoming {Variation}
-GetReleasesIntent give me upcoming {Variation}
-GetReleasesIntent what's coming out
-GetReleasesIntent what is coming out
-GetReleasesIntent what's coming out soon
-GetReleasesIntent what is coming out soon
-GetReleasesIntent new {Variation} {TimeDescriptor}
-GetReleasesIntent upcoming {Variation} {TimeDescriptor}
-GetReleasesIntent what's coming out {TimeDescriptor}
-GetReleasesIntent what's new {TimeDescriptor}
-GetReleasesIntent what's new on TV {TimeDescriptor}
-GetReleasesIntent what new {Variation} comes out {TimeDescriptor}
-GetReleasesIntent something new
-GetReleasesIntent what should I watch
+GetReleases what comes out on {Service} {TimePeriod}
+GetReleases what comes out on TV {TimePeriod}
+GetReleases what's coming out {TimePeriod}
+GetReleases what's coming out soon
+GetReleases what's new on {Service} {TimePeriod}
+GetReleases what new shows come out {TimePeriod}
+GetReleases what new shows come out on {Service} {TimePeriod}
+GetReleases new tv series on {Service}
+GetReleases new series on {Service}
+GetReleases new tv shows on {Service}
+GetReleases new shows on {Service}
+GetReleases new releases on {Service}
+GetReleases upcoming tv series on {Service}
+GetReleases upcoming series on {Service}
+GetReleases upcoming tv shows on {Service}
+GetReleases upcoming shows on {Service}
+GetReleases upcoming releases on {Service}
+GetReleases something new
+
+GetReleaseDate when {Series} comes out
+GetReleaseDate when {Series} releases
+GetReleaseDate when does {Series} comes out
+GetReleaseDate does {Series} comes out {TimePeriod}
+GetReleaseDate does {Series} release {TimePeriod}

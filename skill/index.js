@@ -4,7 +4,7 @@ const moment = require('moment')
 
 const APP_ID = 'amzn1.ask.skill.20b56d1a-0616-4c72-90d5-34a061f0b873'
 const SKILL_NAME = 'Upstream'
-const HELP_MESSAGE = "You can say what's coming this week, or, you can say exit... What can I help you with?"
+const HELP_MESSAGE = "You can say what's coming out this week, or, you can say exit."
 const HELP_REPROMPT = 'What can I help you with?'
 const STOP_MESSAGE = 'Goodbye!'
 
@@ -47,30 +47,31 @@ const releases = {
 }
 
 exports.handler = function(event, context, callback) {
-    const alexa = Alexa.handler(event, context)
-    alexa.appId = APP_ID
-    alexa.registerHandlers(handlers)
-    alexa.execute()
+  const alexa = Alexa.handler(event, context)
+  alexa.appId = APP_ID
+  alexa.registerHandlers(handlers)
+  alexa.execute()
 }
 
 const handlers = {
-    'LaunchRequest': function () { this.emit('GetReleasesIntent') },
-    'GetReleasesIntent': function () {
-        const intentTime = this.event.request.intent.slots.TimeDescriptor.value
-        // const intentMoment = moment(intentDate)
-        // console.log(intentDateObj)
-
-        // const randomIndex = Math.floor(Math.random() * Object.keys(releases).length)
-        // const randomReleaseKey = Object.keys(releases)[randomIndex]
-        // const randomRelease = releases[randomReleaseKey]['name']
-        // const speechOutput = "A random show releasing soon is: " + randomRelease
-        this.emit(':tell', intentTime)
-    },
-    'AMAZON.HelpIntent': function () {
-        const speechOutput = HELP_MESSAGE
-        const reprompt = HELP_REPROMPT
-        this.emit(':ask', speechOutput, reprompt)
-    },
-    'AMAZON.CancelIntent': function () { this.emit(':tell', STOP_MESSAGE) },
-    'AMAZON.StopIntent': function () { this.emit(':tell', STOP_MESSAGE) }
+  'LaunchRequest': function () { this.emit('GetReleases') },
+  'GetReleases': function () {
+    const { slots } = this.event.request.intent
+    const slotVals = Object.keys(slots).map(slot => slots[slot].value)
+    const slotList = slotVals.join(', ')
+    this.emit(':tell', slotList)
+  },
+  'GetReleaseDate': function () {
+    const { slots } = this.event.request.intent
+    const slotVals = Object.keys(slots).map(slot => slots[slot].value)
+    const slotList = slotVals.join(', ')
+    this.emit(':tell', slotList)
+  },
+  'AMAZON.HelpIntent': function () {
+    const speechOutput = HELP_MESSAGE
+    const reprompt = HELP_REPROMPT
+    this.emit(':ask', speechOutput, reprompt)
+  },
+  'AMAZON.CancelIntent': function () { this.emit(':tell', STOP_MESSAGE) },
+  'AMAZON.StopIntent': function () { this.emit(':tell', STOP_MESSAGE) }
 }
