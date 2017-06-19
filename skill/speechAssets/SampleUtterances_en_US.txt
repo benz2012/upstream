@@ -3,6 +3,7 @@ GetReleases what comes out on TV {TimePeriod}
 GetReleases what's coming out {TimePeriod}
 GetReleases what's coming out soon
 GetReleases what's new on {Service} {TimePeriod}
+GetReleases what comes out {TimePeriod}
 GetReleases what new shows come out {TimePeriod}
 GetReleases what new shows come out on {Service} {TimePeriod}
 GetReleases new tv series on {Service}
@@ -16,6 +17,7 @@ GetReleases upcoming tv shows on {Service}
 GetReleases upcoming shows on {Service}
 GetReleases upcoming releases on {Service}
 GetReleases something new
+GetReleases get new releases
 
 GetReleaseDate when {Series} comes out
 GetReleaseDate when {Series} releases
