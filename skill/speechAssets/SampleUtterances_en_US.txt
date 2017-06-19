@@ -4,6 +4,7 @@ GetReleases what's coming out {TimePeriod}
 GetReleases what's coming out soon
 GetReleases what's new on {Service} {TimePeriod}
 GetReleases what comes out {TimePeriod}
+GetReleases what comes out {TimePeriod} on {Service}
 GetReleases what new shows come out {TimePeriod}
 GetReleases what new shows come out on {Service} {TimePeriod}
 GetReleases new tv series on {Service}
@@ -18,6 +19,15 @@ GetReleases upcoming shows on {Service}
 GetReleases upcoming releases on {Service}
 GetReleases something new
 GetReleases get new releases
+GetReleases for new releases {TimePeriod}
+GetReleases for new releases {TimePeriod} on {Service}
+GetReleases for new releases on {Service} {TimePeriod}
+GetReleases for new tv shows {TimePeriod}
+GetReleases for new tv shows {TimePeriod} on {Service}
+GetReleases for new tv shows on {Service} {TimePeriod}
+GetReleases for new series {TimePeriod}
+GetReleases for new series {TimePeriod} on {Service}
+GetReleases for new series on {Service} {TimePeriod}
 
 GetReleaseDate when {Series} comes out
 GetReleaseDate when {Series} releases
