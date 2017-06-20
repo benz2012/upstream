@@ -59,9 +59,15 @@ const handlers = {
 
     let timeMoment = moment(moment().isoWeekYear() + '-W' + moment().isoWeek())
     let timeFilter = 'week'
-
-    if (slots.TimePeriod.value) {
-      timeMoment = moment(slots.TimePeriod.value)
+    const time = slots.TimePeriod.value
+    if (time) {
+      if (time.length === 4 && parseInt(time)) {
+        // Date was given as a year, which is invalid acording to ISO format
+        timeMoment = moment(slots.TimePeriod.value + '-01')
+        timeFilter = 'year'
+      } else {
+        timeMoment = moment(slots.TimePeriod.value)
+      }
     }
     if (!timeMoment.isValid()) {
       const speechOutput = 'Date Invalid. Ask again.'
@@ -71,24 +77,21 @@ const handlers = {
       // Date is Vaild, determine what type of date user gave
       const timeFormat = timeMoment._f
       if (!timeFormat) {
-        if (timeMoment._i.length === 4 && parseInt(timeMoment._i)) {
-          // Date was given as a year
-          timeFilter = 'year'
-        } else {
-          const speechOutput = 'Date Invalid. Ask again.'
-          console.log('about to emit :ask \n with content: \n ' + speechOutput)
-          this.emit(':ask', speechOutput, speechOutput)
-        }
+        const speechOutput = 'Date Invalid. Ask again.'
+        console.log('about to emit :ask \n with content: \n ' + speechOutput)
+        this.emit(':ask', speechOutput, speechOutput)
       } else {
-        if (rightTwo(timeFormat) === 'MM') {
-          // Date was given as a month
-          timeFilter = 'month'
-        } else if (rightTwo(timeFormat) === 'WW') {
-          // Date was given as a week
-          timeFilter = 'week'
-        } else if (rightTwo(timeFormat) === 'DD') {
-          // Date was given as a day
-          timeFilter = 'day'
+        if (timeFilter !== 'year') {
+          if (rightTwo(timeFormat) === 'MM') {
+            // Date was given as a month
+            timeFilter = 'month'
+          } else if (rightTwo(timeFormat) === 'WW') {
+            // Date was given as a week
+            timeFilter = 'week'
+          } else if (rightTwo(timeFormat) === 'DD') {
+            // Date was given as a day
+            timeFilter = 'day'
+          }
         }
       }
     }
@@ -100,12 +103,13 @@ const handlers = {
         localReleases, timeBeginFilter, timeEndFilter, slots.Service.value
       )
       if (releaseResults.length < 1) {
-        const speechOutput = 'There are no releases for that time period. You can ask for new releases for a different time period.'
-        const repromptSpeech = 'You can ask for new releases for a different time period. '
+        const speechOutput = `I found no releases ${timeFrame(timeMoment, timeFilter)}. Try a different Time Frame.`
+        const repromptSpeech = 'You can ask about new releases for a different time frame. '
         console.log('about to emit :ask \n with content: \n ' + speechOutput)
         this.emit(':ask', speechOutput, repromptSpeech)
       } else {
-        const speechOutput = releaseResults.join(', ')
+        const joined = releaseResults.join(', ')
+        const speechOutput = releaseResults.length > 1 ? addAnd(joined) : joined
         console.log('about to emit :tell \n with content: \n ' + speechOutput)
         this.emit(':tell', speechOutput)
       }
@@ -114,20 +118,21 @@ const handlers = {
         localReleases, timeBeginFilter, timeEndFilter
       )
       if (releaseResults.length < 1) {
-        const speechOutput = 'There are no releases for that time period. You can ask for new releases for a different time period.'
-        const repromptSpeech = 'You can ask for new releases for a different time period.'
+        const speechOutput = `I found no releases ${timeFrame(timeMoment, timeFilter)}. Try a different Time Frame.`
+        const repromptSpeech = 'You can ask about new releases for a different time frame. '
         console.log('about to emit :ask \n with content: \n ' + speechOutput)
         this.emit(':ask', speechOutput, repromptSpeech)
       }
       if (!slots.NumberToRead.value) {
-        const timePeriod = timeMoment.format()
+        const frame = timeFrame(timeMoment, timeFilter)
         const originalIntent = this.event.request.intent
-        const speechOutput = `There are ${releaseResults.length} new releases ${timePeriod}. How many would you like to hear?`
-        const repromptSpeech = `How many of ${timePeriod}'s new releases would you like to hear?`
+        const speechOutput = `There are <emphasis>${releaseResults.length}</emphasis> new releases ${frame}. How many would you like to hear?`
+        const repromptSpeech = `How many of new releases would you like to hear?`
         console.log('about to emit :elicitSlot \n with content: \n ' + speechOutput)
         this.emit(':elicitSlot', 'NumberToRead', speechOutput, repromptSpeech, originalIntent)
       } else {
-        const speechOutput = releaseResults.slice(0, slots.NumberToRead.value).join(', ')
+        const trimmed = releaseResults.slice(0, slots.NumberToRead.value).join(', ')
+        const speechOutput = slots.NumberToRead.value > 1 ? addAnd(trimmed) : trimmed
         console.log('about to emit :tell \n with content: \n ' + speechOutput)
         this.emit(':tell', speechOutput)
       }
@@ -161,7 +166,7 @@ const handlers = {
             }
           }
         })
-        const speechOutput = `${slots.Series.value} ${when}`
+        const speechOutput = `<emphasis>${slots.Series.value}</emphasis> ${when}`
         console.log('about to emit :tell \n with content: \n ' + speechOutput)
         this.emit(':tell', speechOutput)
       } else {
@@ -170,10 +175,6 @@ const handlers = {
         this.emit(':tell', speechOutput)
       }
     }
-    const slotVals = Object.keys(slots).map(slot => slots[slot].value)
-    const speechOutput = slotVals.join(', ')
-    console.log('about to emit :tell \n with content: \n ' + speechOutput)
-    this.emit(':tell', speechOutput)
   },
   'AMAZON.HelpIntent': function () {
     const speechOutput = HELP_MESSAGE
@@ -198,6 +199,28 @@ const handlers = {
 
 // UTILITY FUNCTIONS
 const rightTwo = (str) => str.substring(str.length - 2)
+const leftTwo = (str) => str.substring(0, 2)
+
+const timeFrame = (m, granularity) => {
+  const timeAddKey = granularity === 'month' ? 'M' : granularity.substring(0, 1)
+  if (m.isSame(moment.now(), granularity)) {
+    return `this ${granularity}`
+  } else if (m.isBefore(moment.now())) {
+    if (moment(m).add(1, timeAddKey).isSame(moment.now(), granularity)) {
+      return `last ${granularity}`
+    }
+  } else if (m.isAfter(moment.now())) {
+    if (moment(m).subtract(1, timeAddKey).isSame(moment.now(), granularity)) {
+      return `next ${granularity}`
+    }
+  }
+  if (granularity === 'month' && m.isSame(moment.now(), 'year')) {
+    return `in ${m.format('MMMM')}`
+  } else if (granularity === 'year') {
+    return `in ${m.format('YYYY')}`
+  }
+  return `for that ${granularity}`
+}
 
 const filterReleases = (releases, start, end) => {
   const filtered = []
@@ -233,3 +256,9 @@ const flatten = (o) => Object.assign(
     )
   }(o)
 )
+
+const addAnd = (str) => {
+  const begining = str.substring(0, str.lastIndexOf(','))
+  const ending = str.substring(str.lastIndexOf(',') + 2)
+  return `${begining} and ${ending}`
+}
