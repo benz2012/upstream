@@ -1,6 +1,7 @@
 'use strict'
 const Alexa = require('alexa-sdk')
 const moment = require('moment')
+const util = require('util') // for logging objects
 
 const APP_ID = 'amzn1.ask.skill.20b56d1a-0616-4c72-90d5-34a061f0b873'
 const SKILL_NAME = 'Upstream'
@@ -8,6 +9,16 @@ const HELP_MESSAGE = "You can say, what's coming out this week, or, you can say 
 const HELP_REPROMPT = 'What can I help you with?'
 const STOP_MESSAGE = 'Goodbye!'
 
+const services = [
+  'cbs',
+  'acorn',
+  'cinemax',
+  'showtime',
+  'hulu',
+  'amazon',
+  'hbo',
+  'netflix',
+]
 const localReleases = {
   "netflix": {
     "GLOW": "2017-06-23T04:00:00.000Z",
@@ -21,15 +32,23 @@ const localReleases = {
 }
 
 const defaultSlots = {
-  "TimePeriod": {
-    "name": "TimePeriod"
+  Service: {
+    name: 'Service',
+    confirmationStatus: 'NONE'
   },
-  "Service": {
-    "name": "Service"
+  TimePeriod: {
+    name: 'TimePeriod',
+    confirmationStatus: 'NONE'
   },
-  "NumberToRead": {
-    "name": "NumberToRead"
+  NumberToRead: {
+    name: 'NumberToRead',
+    confirmationStatus: 'NONE'
   }
+}
+const defaultIntent = {
+  name: 'GetReleases',
+  confirmationStatus: 'NONE',
+  slots: Object.assign({}, defaultSlots)
 }
 
 exports.handler = function (event, context, callback) {
@@ -41,11 +60,13 @@ exports.handler = function (event, context, callback) {
 
 const handlers = {
   'LaunchRequest': function () {
-    console.log('about to emit trigger for GetReleases')
-    this.emit('GetReleases')
+    // console.log('about to emit trigger for GetReleases')
+    const speechOutput = `Hello, ask me about new releases for your favorite streaming service.`
+    const repromptSpeech = `What release information can I get you?`
+    return this.emit(':ask', speechOutput, repromptSpeech)
   },
   'GetReleases': function () {
-    console.log(this.event.request)
+    console.log(util.inspect(this.event.request, false, null))
     let slots = null
     if (!this.event.request.intent) {
       slots = defaultSlots
@@ -97,16 +118,28 @@ const handlers = {
     }
     const timeBeginFilter = moment(timeMoment).startOf(timeFilter)
     const timeEndFilter = moment(timeMoment).endOf(timeFilter)
+    const timeFrameValue = timeFrame(timeMoment, timeFilter)
 
     if (slots.Service.value) {
+      if (services.indexOf(slots.Service.value.toLowerCase()) === -1) {
+        const speechOutput = `Sorry, ${slots.Service.value} is not a streaming service I can check.`
+        console.log('about to emit :tell \n with content: \n ' + speechOutput)
+        this.emit(':tell', speechOutput)
+      }
       const releaseResults = filterReleasesOfService(
         localReleases, timeBeginFilter, timeEndFilter, slots.Service.value
       )
       if (releaseResults.length < 1) {
-        const speechOutput = `I found no releases ${timeFrame(timeMoment, timeFilter)}. Try a different Time Frame.`
-        const repromptSpeech = 'You can ask about new releases for a different time frame. '
+        const speechOutput = `I found no ${slots.Service.value} releases ${timeFrameValue}.`
+        const repromptSpeech = speechOutput
         console.log('about to emit :ask \n with content: \n ' + speechOutput)
         this.emit(':ask', speechOutput, repromptSpeech)
+      } else if (releaseResults.length === 1) {
+        const oneRelease = releaseResults[0]
+        const speechOutput = `${oneRelease}, is the only release ${timeFrameValue}`
+        console.log('about to emit :tell \n with content: \n ' + speechOutput)
+        this.emit(':tell', speechOutput)
+        //glow is the only release this week
       } else {
         const joined = releaseResults.join(', ')
         const speechOutput = releaseResults.length > 1 ? addAnd(joined) : joined
@@ -118,20 +151,40 @@ const handlers = {
         localReleases, timeBeginFilter, timeEndFilter
       )
       if (releaseResults.length < 1) {
-        const speechOutput = `I found no releases ${timeFrame(timeMoment, timeFilter)}. Try a different Time Frame.`
-        const repromptSpeech = 'You can ask about new releases for a different time frame. '
+        const speechOutput = `I found no ${slots.Service.value} releases ${timeFrameValue}.`
+        const repromptSpeech = speechOutput
         console.log('about to emit :ask \n with content: \n ' + speechOutput)
         this.emit(':ask', speechOutput, repromptSpeech)
       }
       if (!slots.NumberToRead.value) {
-        const frame = timeFrame(timeMoment, timeFilter)
         const originalIntent = this.event.request.intent
-        const speechOutput = `There are <emphasis>${releaseResults.length}</emphasis> new releases ${frame}. How many would you like to hear?`
-        const repromptSpeech = `How many of new releases would you like to hear?`
-        console.log('about to emit :elicitSlot \n with content: \n ' + speechOutput)
-        this.emit(':elicitSlot', 'NumberToRead', speechOutput, repromptSpeech, originalIntent)
+        const speechOutput = `There are <emphasis>${releaseResults.length}</emphasis> new releases ${timeFrameValue}. How many would you like to hear?`
+        const repromptSpeech = `How many new releases would you like to hear?`
+        if (!originalIntent) {
+          console.log('about to emit :elicitSlot \n with: \n ' + speechOutput)
+          console.log('defaultIntent: ' + util.inspect(defaultIntent, false, null))
+          this.emit(':elicitSlot', 'NumberToRead', speechOutput, repromptSpeech, defaultIntent)
+        } else {
+          console.log('about to emit :elicitSlot \n with content: \n ' + speechOutput)
+          console.log('originalIntent: ' + util.inspect(originalIntent, false, null))
+          this.emit(':elicitSlot', 'NumberToRead', speechOutput, repromptSpeech, originalIntent)
+        }
       } else {
-        const trimmed = releaseResults.slice(0, slots.NumberToRead.value).join(', ')
+        let numToRead
+        if (slots.NumberToRead.value) {
+          numToRead = parseInt(slots.NumberToRead.value)
+        } else {
+          numToRead = releaseResults.length
+        }
+        if (numToRead === 0) {
+          this.emit(':tell', 'Okay, bye.')
+        }
+        if (releaseResults.length === 1) {
+          const speechOutput = `${releaseResults[0]}, is the only release ${timeFrameValue}`
+          console.log('about to emit :tell \n with content: \n ' + speechOutput)
+          this.emit(':tell', speechOutput)
+        }
+        const trimmed = releaseResults.slice(0, numToRead).join(', ')
         const speechOutput = slots.NumberToRead.value > 1 ? addAnd(trimmed) : trimmed
         console.log('about to emit :tell \n with content: \n ' + speechOutput)
         this.emit(':tell', speechOutput)
@@ -139,6 +192,7 @@ const handlers = {
     }
   },
   'GetReleaseDate': function () {
+    console.log(util.inspect(this.event.request, false, null))
     const { slots } = this.event.request.intent
     if (!slots.Series.value) {
       const originalIntent = this.event.request.intent
@@ -170,7 +224,7 @@ const handlers = {
         console.log('about to emit :tell \n with content: \n ' + speechOutput)
         this.emit(':tell', speechOutput)
       } else {
-        const speechOutput = `I'm sorry, I don't know when that show releases.`
+        const speechOutput = `I'm sorry, I don't know when ${slots.Series.value} releases.`
         console.log('about to emit :tell \n with content: \n ' + speechOutput)
         this.emit(':tell', speechOutput)
       }
@@ -233,6 +287,7 @@ const filterReleases = (releases, start, end) => {
 
 const filterReleasesOfService = (releases, start, end, service) => {
   const focus = releases[service.toLowerCase()]
+  if (!focus) { return [] }
   const filtered = Object.keys(focus)
     .filter(series => moment(focus[series]).isBetween(start, end, null, '[]'))
     .sort((a, b) => {
@@ -240,6 +295,7 @@ const filterReleasesOfService = (releases, start, end, service) => {
       if (moment(focus[a]).isAfter(focus[b])) { return 1 }
       return 0
     })
+    // .map(series => `<emphasis>${series}</emphasis>`)
   console.log(filtered)
   return filtered
 }
@@ -260,5 +316,5 @@ const flatten = (o) => Object.assign(
 const addAnd = (str) => {
   const begining = str.substring(0, str.lastIndexOf(','))
   const ending = str.substring(str.lastIndexOf(',') + 2)
-  return `${begining} and ${ending}`
+  return `${begining}, and ${ending}`
 }
